@@ -3,6 +3,8 @@ Criado um cenário fictício, baseado em cloud computing utilizando a plataforma
 
 ATIVIDADES REALIZADAS:  
 
+- Download dos arquivos referente as solicitações anatel (dados abertos)
+- Utilizado o Data Lake Analytics para unificar todos arquivos
 - Modelagem de dados (dimensional) 
 - Criação de um Banco de Dados Sql Server
 - Criação de um processo de ETL utilizando o Data Flow do Azure Data Factory
