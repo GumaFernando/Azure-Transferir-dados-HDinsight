@@ -6,7 +6,7 @@ ATIVIDADES REALIZADAS:
 - Modelagem de dados (dimensional) 
 - Criação de um Banco de Dados
 - Criação de um processo de ETL com o Data Factory
-- Criação de um ambiente de Big Data Hdinisgh
+- Criação de um ambiente de Big Data Hdinsight
 - Utilização do sqoop para transferência dos dados 
 - Utilização do Hive e Spark Sql para processamento 
 - Utilização do Power Bi para criar visualizações
