@@ -4,7 +4,7 @@ Criado um cenário fictício, baseado em cloud computing utilizando a plataforma
 ATIVIDADES REALIZADAS:  
 
 - Modelagem de dados (dimensional) 
-- Criação de um Banco de Dados
+- Criação de um Banco de Dados Sql Server
 - Criação de um processo de ETL com o Data Factory
 - Criação de um ambiente de Big Data Hdinsight
 - Utilização do sqoop para transferência dos dados 
