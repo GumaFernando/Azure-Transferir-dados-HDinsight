@@ -1,0 +1,180 @@
+﻿
+
+ -- SCRIPTS DO PROJETO ANATEL - SOLICITAÇOES
+
+
+## USADO ESSE PROCESSO APENAS PARA JUNTAR OS ARQUIVOS CSV EM UM ÚNICO ARQUIVO  FORMATO TSV.
+
+#########################   CREATE DABATATE E ESQUEMA
+
+#### COMANDO NO DATALAKE ANALYTICS
+
+CREATE DATABASE IF NOT EXISTS anatel;
+
+USE DATABASE anatel;
+
+CREATE TABLE solicitacoes
+( DataExtracao string,
+Ano string,
+Mes string,
+CanalEntrada string,
+Condicao string,
+GrupoEconNorm string,
+Tipo string,
+Servico string,
+Modalidade string,
+Motivo string,
+UF string,
+QtdeSolic int,
+INDEX idx_DataExtracao CLUSTERED (DataExtracao))
+DISTRIBUTED BY HASH(Ano);
+
+
+
+---
+
+#########################  INSERINDO OS DADOS DE TODOS OS ARQUIVOS NA TABELA
+
+
+USE DATABASE anatel;
+
+@log = 
+EXTRACT dataextracao string,
+ano	string,
+mes	string,
+canalentrada	string,
+condicao	string,
+grupoeconnorm	string,
+tipo	string,
+servico string,
+modalidade	string,
+motivo	string,
+uf	string,
+qtdesolic int
+FROM "/solicitacoes/{*}.csv"
+USING Extractors.Text(';' , silent:true, skipFirstNRows:1, encoding:System.Text.Encoding.GetEncoding("Windows-1252"));
+
+
+INSERT INTO solicitacoes
+SELECT * FROM @log;
+
+
+
+------------------------
+
+           
+
+>>>>>>>>>>>>>>>>>>> HIVE 
+
+ ----------------------  CRINDO TABLE IN HIVE
+
+beeline -u 'jdbc:hive2://headnodehost:10001/;transportMode=http'
+
+CREATE DATABASE IF NOT EXISTS anatel
+
+
+CREATE TABLE HVDIM_OPERADORA (
+SK_OPERADORA int, 
+operadora string)
+ROW FORMAT DELIMITED FIELDS  TERMINATED BY '\t';
+
+
+CREATE TABLE HVDIM_TEMPO (
+SK_TEMPO int 
+,mes int
+,ano int)
+ROW FORMAT DELIMITED FIELDS  TERMINATED BY '\t';
+
+CREATE TABLE HVDIM_CHAMADO (
+SK_CHAMADO int,
+canal_entrada string,
+condicao string,
+tipo string,
+servico string,
+modalidade string,
+motivo string)
+ROW FORMAT DELIMITED FIELDS  TERMINATED BY '\t';
+
+
+CREATE TABLE HVDIM_REGIAO (
+SK_UF int 
+,uf string)
+ROW FORMAT DELIMITED FIELDS  TERMINATED BY '\t';
+
+
+
+
+CREATE TABLE HVFCT_SOLICITACAO (
+ID_SOLICITACAO int 
+,SK_TEMPO int
+,SK_CHAMADO int
+,SK_OPERADORA int
+,SK_UF int
+,Quantidade int)
+ROW FORMAT DELIMITED FIELDS  TERMINATED BY '\t';
+
+
+
+================================================================================
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..   INGESTÃO DE DADOS COM SQOOP
+
+export password='160986Gum@'
+export sqlserver="gumasql"
+export database="gumasql"
+
+
+export serverConnect="jdbc:sqlserver://$sqlserver.database.windows.net:1433;user=hduser;password=$password"
+export serverDbConnect="jdbc:sqlserver://$sqlserver.database.windows.net:1433;user=hduser;password=$password;database=$database"
+
+
+sqoop import --connect $serverDbConnect \
+--table DIM_OPERADORA \
+--fields-terminated-by '\t' \
+--lines-terminated-by '\n' \
+--hive-database anatel \
+--hive-table hvdim_operadora \
+--hive-import -m 1
+
+sqoop import --connect $serverDbConnect \
+--table DIM_REGIAO \
+--fields-terminated-by '\t' \
+--lines-terminated-by '\n' \
+--hive-database anatel \
+--hive-table hvdim_regiao \
+--hive-import -m 1
+
+sqoop import --connect $serverDbConnect \
+--table DIM_CHAMADO \
+--fields-terminated-by '\t' \
+--lines-terminated-by '\n' \
+--hive-database anatel \
+--hive-table hvdim_chamado \
+--hive-import -m 1
+
+sqoop import --connect $serverDbConnect \
+--table DIM_TEMPO \
+--fields-terminated-by '\t' \
+--lines-terminated-by '\n' \
+--hive-database anatel \
+--hive-table hvdim_tempo \
+--hive-import -m 1
+
+sqoop import --connect $serverDbConnect \
+--table FCT_SOLICITACAO \
+--fields-terminated-by '\t' \
+--lines-terminated-by '\n' \
+--hive-database anatel \
+--hive-table hvfct_solicitacao \
+--hive-import -m 1
+
+
+=====================
+
+
+
+
+
+
+
+
