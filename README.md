@@ -15,4 +15,4 @@ Solução proposta: Utilização do recurso de Big Data Hdinsight da Microsoft A
 - Utilização do Hive e Spark Sql para processamento
 - Utilização do Power Bi para criar visualizações
 
-![alt text] https://github.com/GumaFernando/ProjetoTelecom/blob/master/Processo_arquitetura.jpg
+![alt text] (https://github.com/GumaFernando/ProjetoTelecom/blob/master/Processo_arquitetura.jpg)
